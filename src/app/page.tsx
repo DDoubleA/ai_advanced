@@ -8,8 +8,8 @@ export default function Home() {
   return (
     <main className={styles.main}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Quiz Master</h1>
-        <p className={styles.subtitle}>Choose a category to start your challenge!</p>
+        <h1 className={styles.title}>AI Advanced</h1>
+        <p className={styles.subtitle}>기출문제 제보 부탁드립니다!</p>
       </header>
 
       <div className={styles.grid}>
