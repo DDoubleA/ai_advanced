@@ -2,6 +2,8 @@ import { formatCategories } from '@/data/questions';
 import CategoryCard from '@/components/CategoryCard';
 import styles from './page.module.css';
 
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   const categories = await formatCategories();
 

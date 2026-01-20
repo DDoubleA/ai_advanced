@@ -3,6 +3,8 @@ import QuizGame from '@/components/QuizGame';
 import styles from './page.module.css';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 interface PageProps {
     params: Promise<{ categoryId: string }>;
 }
