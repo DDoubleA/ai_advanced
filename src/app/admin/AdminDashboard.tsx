@@ -29,6 +29,7 @@ export default function AdminDashboard({ categories }: AdminDashboardProps) {
         setExplanation('');
         setEditingId(null);
         setIsAdding(false);
+
     };
 
     const startAdding = () => {
