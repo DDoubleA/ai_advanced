@@ -8,7 +8,7 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-    const categories = formatCategories();
+    const categories = await formatCategories();
     return categories.map((category) => ({
         categoryId: category.id,
     }));
@@ -16,7 +16,7 @@ export async function generateStaticParams() {
 
 export default async function QuizPage({ params }: PageProps) {
     const { categoryId } = await params;
-    const category = getCategory(categoryId);
+    const category = await getCategory(categoryId);
 
     if (category) {
         // Randomize questions: Shuffle and take 20

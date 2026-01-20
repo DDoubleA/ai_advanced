@@ -1,26 +1,59 @@
 import { Category } from '@/types/quiz';
-import fs from 'fs';
-import path from 'path';
+import { prisma } from '@/lib/prisma';
 
-// For caching/singleton in dev environment to avoid re-reading every request if desired, 
-// but for Admin functionality we want fresh data.
-// In Server Components we can read directly.
-
-export const formatCategories = (): Category[] => {
-    // In a real Vercel deployment, this file write won't persist.
-    // We need to use process.cwd() to find the file correctly in Next.js
-    const dataPath = path.join(process.cwd(), 'src/data/db.json');
-
+// Fetch all categories with their questions
+export const formatCategories = async (): Promise<Category[]> => {
     try {
-        const fileContents = fs.readFileSync(dataPath, 'utf8');
-        const categories = JSON.parse(fileContents);
-        return categories;
+        const categories = await prisma.category.findMany({
+            include: {
+                questions: {
+                    orderBy: {
+                        id: 'asc'
+                    }
+                }
+            },
+            orderBy: {
+                // Determine order if needed, or by name/id
+                id: 'asc'
+            }
+        });
+
+        return categories.map(c => ({
+            id: c.id,
+            name: c.name,
+            questions: c.questions.map(q => ({
+                id: q.id,
+                text: q.text,
+                options: q.options,
+                correctIndex: q.correctIndex,
+                explanation: q.explanation
+            }))
+        }));
     } catch (error) {
-        console.error('Error reading db.json', error);
+        console.error('Error fetching categories from DB:', error);
         return [];
     }
 };
 
-export const getCategory = (id: string): Category | undefined => {
-    return formatCategories().find(c => c.id === id);
+export const getCategory = async (id: string): Promise<Category | undefined> => {
+    const category = await prisma.category.findUnique({
+        where: { id },
+        include: {
+            questions: true
+        }
+    });
+
+    if (!category) return undefined;
+
+    return {
+        id: category.id,
+        name: category.name,
+        questions: category.questions.map(q => ({
+            id: q.id,
+            text: q.text,
+            options: q.options,
+            correctIndex: q.correctIndex,
+            explanation: q.explanation
+        }))
+    };
 };
