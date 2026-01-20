@@ -1,0 +1,76 @@
+.gameContainer {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.header {
+    margin-bottom: 2rem;
+}
+
+.headerTop {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.headerRight {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.categoryBadge {
+    background: #f1f5f9;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    color: #64748b;
+    font-size: 0.875rem;
+}
+
+.scoreBadge {
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.finishButton {
+    background: transparent;
+    border: 1px solid #cbd5e1;
+    color: #64748b;
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.finishButton:hover {
+    border-color: var(--error-color);
+    color: var(--error-color);
+    background: #fef2f2;
+}
+
+.progressBarBg {
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progressBarFill {
+    height: 100%;
+    background: var(--primary-color);
+    transition: width 0.3s ease-out;
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    color: var(--text-color);
+    font-size: 1.2rem;
+}
