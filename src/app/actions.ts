@@ -84,3 +84,26 @@ export async function logout() {
     (await cookies()).delete('admin_auth');
     return { success: true };
 }
+
+export async function getQuestionsByIds(ids: number[]): Promise<Question[]> {
+    if (!ids.length) return [];
+
+    try {
+        const questions = await prisma.question.findMany({
+            where: {
+                id: { in: ids }
+            }
+        });
+
+        return questions.map(q => ({
+            id: q.id,
+            text: q.text,
+            options: q.options,
+            correctIndex: q.correctIndex,
+            explanation: q.explanation
+        }));
+    } catch (e) {
+        console.error("Failed to fetch questions by IDs", e);
+        return [];
+    }
+}

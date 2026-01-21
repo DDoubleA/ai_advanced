@@ -18,7 +18,20 @@ export const formatCategories = async (): Promise<Category[]> => {
             }
         });
 
-        return categories.map(c => ({
+        const ORDER = [
+            'python-basics',
+            'data-analysis',
+            'llm-basics',
+            'prompt-engineering',
+            'rag-agent',
+            'fine-tuning'
+        ];
+
+        const sortedCategories = categories.sort((a, b) => {
+            return ORDER.indexOf(a.id) - ORDER.indexOf(b.id);
+        });
+
+        return sortedCategories.map(c => ({
             id: c.id,
             name: c.name,
             questions: c.questions.map(q => ({

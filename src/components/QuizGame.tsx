@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Question } from '@/types/quiz';
 import QuestionView from './QuestionView';
 import FeedbackView from './FeedbackView';
 import ResultView from './ResultView';
+import { saveIncorrectQuestionId, removeIncorrectQuestionId, getIncorrectQuestionIds } from '@/utils/storage';
 import styles from './QuizGame.module.css';
 
 interface QuizGameProps {
@@ -18,20 +19,9 @@ export default function QuizGame({ questions, categoryName }: QuizGameProps) {
     const [selectedOption, setSelectedOption] = useState<number | null>(null);
     const [showFeedback, setShowFeedback] = useState(false);
     const [isFinished, setIsFinished] = useState(false);
-
-    // Shuffled state for the current question
-    // const [shuffledState, setShuffledState] = useState<{ options: string[], mapping: number[] } | null>(null);
-    // Duplicate removed.
-
-    // Actually lines 22-23 were:
-    // // Shuffled state for the current question
-    // const [shuffledState, setShuffledState] = useState<{ options: string[], mapping: number[] } | null>(null);
-
-    // And lines 71-72 were:
-    // // State for the *current question's* shuffled options
-    // const [shuffledState, setShuffledState] = useState<{ options: string[], mapping: number[] } | null>(null);
-
-    // I need to remove one of them. Let's remove the first one.
+    const [isPreviouslyIncorrect, setIsPreviouslyIncorrect] = useState(false);
+    const [isConfirmingFinish, setIsConfirmingFinish] = useState(false);
+    const [shuffledState, setShuffledState] = useState<{ options: string[], mapping: number[] } | null>(null);
 
     const currentQuestion = questions[currentIndex];
 
@@ -49,58 +39,29 @@ export default function QuizGame({ questions, categoryName }: QuizGameProps) {
         };
     };
 
-    // Effect to update shuffled data when question changes
-    // Imports at top? No, inside component.
+    // Initialize/Update shuffled state and check incorrect status when question changes
+    useEffect(() => {
+        if (currentQuestion) {
+            // Shuffle
+            setShuffledState(shuffleOptions(currentQuestion.options));
 
-    // Actually, let's keep it simple. 
-    // We can just shuffle options when we set CurrentIndex, but we need to store it.
-
-    // Let's restart:
-    // We need to maintain the "current shuffled state" for the question.
-    // If we only shuffle on render, it will change on re-renders.
-
-    // Let's modify the component structure slightly.
-    /*
-      Instead of complex state, let's memoize the shuffled options for the current question ID.
-      Or simpler: Just a state that holds the current shuffled options and the map.
-    */
-
-    // Helper to shuffle options
-    // Duplicate removed.
-
-    // Actually lines 28-39 were:
-    // const shuffleOptions = (opts: string[]) => { ... };
-
-    // And lines 58-69 were:
-    // const shuffleOptions = (opts: string[]) => { ... };
-
-    // I need to remove one of them. Let's remove the second one.
-
-    // State for the *current question's* shuffled options
-    const [shuffledState, setShuffledState] = useState<{ options: string[], mapping: number[] } | null>(null);
-
-    if (currentQuestion && (!shuffledState)) {
-        // Initial load
-        setShuffledState(shuffleOptions(currentQuestion.options));
-    }
+            // Check incorrect status
+            const ids = getIncorrectQuestionIds();
+            setIsPreviouslyIncorrect(ids.includes(currentQuestion.id));
+        }
+    }, [currentQuestion]);
 
     const handleAnswer = (displayIndex: number) => {
         if (selectedOption !== null || !shuffledState) return;
 
-        // Map displayIndex to originalIndex
         const originalIndex = shuffledState.mapping[displayIndex];
-
-        setSelectedOption(originalIndex); // Store ORIGINAL index as selection to keep View logic consistent? 
-        // Wait, QuestionView expects selectedOption to be index 0-4. 
-        // If we pass shuffled options to QuestionView, then QuestionView's "index" matches the shuffled array.
-        // So we should store the DISPLAY index or ORIGINAL index?
-        // QuestionView highlights based on `selectedOption === iteratorIndex`.
-        // So selectedOption MUST be the DISPLAY index.
-
         setSelectedOption(displayIndex);
 
         if (originalIndex === currentQuestion.correctIndex) {
             setScore(s => s + 1);
+            removeIncorrectQuestionId(currentQuestion.id);
+        } else {
+            saveIncorrectQuestionId(currentQuestion.id);
         }
         setShowFeedback(true);
     };
@@ -110,7 +71,7 @@ export default function QuizGame({ questions, categoryName }: QuizGameProps) {
             setCurrentIndex(c => c + 1);
             setSelectedOption(null);
             setShowFeedback(false);
-            setShuffledState(null); // Force re-shuffle for next question
+            setShuffledState(null);
         } else {
             setIsFinished(true);
         }
@@ -125,47 +86,45 @@ export default function QuizGame({ questions, categoryName }: QuizGameProps) {
         setShuffledState(null);
     };
 
-    // ... handleEarlyFinish is fine.
-
-    if (isFinished) {
-        // ...
-    }
-
-    // Prepare data for View using Shuffled State
-    // If shuffledState is null (first render cycle), render nothing or waiting?
-    if (!currentQuestion || !shuffledState) return <div className={styles.loading}>Loading...</div>;
-
-    /* 
-      Issue: We need to tell QuestionView which option is correct for highlighting.
-      QuestionView takes `correctOption`: number.
-      If we pass SHUFFLED options, we need to pass the SHUFFLED index of the correct answer.
-    */
-    const correctDisplayIndex = shuffledState.mapping.indexOf(currentQuestion.correctIndex);
-
-    // ... Return JSX
-    // Update QuestionView props:
-    /*
-      question={{ ...currentQuestion, options: shuffledState.options }}
-      correctOption={selectedOption !== null ? correctDisplayIndex : null}
-    */
-
     const handleEarlyFinish = () => {
-        if (confirm('Are you sure you want to finish the quiz now?')) {
-            setIsFinished(true);
-        }
+        setIsConfirmingFinish(true);
     };
 
     if (isFinished) {
         const questionsAttempted = selectedOption !== null ? currentIndex + 1 : currentIndex;
-        // If 0 attempted, avoid division by zero issues in ResultView by passing 0 (ResultView handles NaN? No, we should fix ResultView or handle here).
-        // Actually, let's fix ResultView to handle 0, but here passing the logic is key.
         return <ResultView score={score} total={questionsAttempted} onRestart={handleRestart} />;
     }
 
+    if (!currentQuestion || !shuffledState) return <div className={styles.loading}>Loading...</div>;
+
+    const correctDisplayIndex = shuffledState.mapping.indexOf(currentQuestion.correctIndex);
     const progress = ((currentIndex + 1) / questions.length) * 100;
 
     return (
         <div className={styles.gameContainer}>
+            {isConfirmingFinish && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modal}>
+                        <h3>Finish Quiz?</h3>
+                        <p>Are you sure you want to finish the quiz now?</p>
+                        <div className={styles.modalButtons}>
+                            <button
+                                className={`${styles.modalButton} ${styles.cancelButton}`}
+                                onClick={() => setIsConfirmingFinish(false)}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className={`${styles.modalButton} ${styles.confirmButton}`}
+                                onClick={() => setIsFinished(true)}
+                            >
+                                Finish
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <header className={styles.header}>
                 <div className={styles.headerTop}>
                     <span className={styles.categoryBadge}>{categoryName}</span>
@@ -182,6 +141,12 @@ export default function QuizGame({ questions, categoryName }: QuizGameProps) {
             </header>
 
             <main className={styles.main}>
+                {isPreviouslyIncorrect && (
+                    <div className={styles.incorrectBadge}>
+                        ⚠️ You missed this question previously!
+                    </div>
+                )}
+
                 <QuestionView
                     question={{ ...currentQuestion, options: shuffledState.options }}
                     onAnswer={handleAnswer}

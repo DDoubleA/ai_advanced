@@ -1,5 +1,6 @@
 import { formatCategories } from '@/data/questions';
 import CategoryCard from '@/components/CategoryCard';
+import ReviewLink from '@/components/ReviewLink';
 import styles from './page.module.css';
 
 export const dynamic = 'force-dynamic';
@@ -15,6 +16,7 @@ export default async function Home() {
       </header>
 
       <div className={styles.grid}>
+        <ReviewLink />
         {categories.map((category) => (
           <CategoryCard
             key={category.id}

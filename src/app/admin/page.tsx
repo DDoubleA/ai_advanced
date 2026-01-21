@@ -3,6 +3,8 @@ import LoginPage from './LoginPage';
 import { cookies } from 'next/headers';
 import { formatCategories } from '@/data/questions';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminPage() {
     const cookieStore = await cookies();
     const isAuthenticated = cookieStore.get('admin_auth')?.value === 'true';
