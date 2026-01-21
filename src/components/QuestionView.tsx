@@ -14,6 +14,7 @@ export default function QuestionView({ question, onAnswer, disabled, selectedOpt
     return (
         <div className={styles.container}>
             <h2 className={styles.questionText}>
+                {question.isExam && <span className={styles.examBadge}>기출</span>}
                 <span className={styles.questionNumber}>Q{currentNumber}. </span>
                 {question.text}
             </h2>

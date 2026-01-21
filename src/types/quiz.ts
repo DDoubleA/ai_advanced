@@ -5,6 +5,7 @@ export interface Question {
   correctIndex: number; // 0-4
   explanation: string;
   categoryId: string;
+  isExam?: boolean;
 }
 
 export interface Category {

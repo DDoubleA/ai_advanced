@@ -22,7 +22,8 @@ export async function addQuestion(categoryId: string, question: Omit<Question, '
             options: question.options,
             correctIndex: question.correctIndex,
             explanation: question.explanation,
-            categoryId: category.id
+            categoryId: category.id,
+            isExam: question.isExam ?? false
         }
     });
 
@@ -57,7 +58,8 @@ export async function updateQuestion(categoryId: string, updatedQuestion: Questi
                 options: updatedQuestion.options,
                 correctIndex: updatedQuestion.correctIndex,
                 explanation: updatedQuestion.explanation,
-                categoryId: categoryId // Ensure category integrity
+                categoryId: categoryId, // Ensure category integrity
+                isExam: updatedQuestion.isExam ?? false
             }
         });
     } catch (e) {
@@ -106,7 +108,8 @@ export async function getQuestionsByIds(ids: number[]): Promise<Question[]> {
             options: q.options,
             correctIndex: q.correctIndex,
             explanation: q.explanation,
-            categoryId: q.categoryId
+            categoryId: q.categoryId,
+            isExam: q.isExam
         }));
     } catch (e) {
         console.error("Failed to fetch questions by IDs", e);

@@ -21,7 +21,8 @@ model Question {
   correctIndex Int
   explanation  String
   categoryId   String
-  category     Category @relation(fields: [categoryId], references: [id])
+  isExam       Boolean   @default(false)
+  category     Category  @relation(fields: [categoryId], references: [id])
   inquiries    Inquiry[] // Relation to inquiries
 }
 

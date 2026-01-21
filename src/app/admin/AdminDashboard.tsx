@@ -30,6 +30,7 @@ export default function AdminDashboard({ categories }: AdminDashboardProps) {
     const [options, setOptions] = useState(['', '', '', '', '']);
     const [correctIndex, setCorrectIndex] = useState(0);
     const [explanation, setExplanation] = useState('');
+    const [isExam, setIsExam] = useState(false);
 
     const currentCategory = categories.find(c => c.id === selectedCategory);
 
@@ -55,6 +56,7 @@ export default function AdminDashboard({ categories }: AdminDashboardProps) {
         setOptions(['', '', '', '', '']);
         setCorrectIndex(0);
         setExplanation('');
+        setIsExam(false);
         setEditingId(null);
         setIsAdding(false);
     };
@@ -69,6 +71,7 @@ export default function AdminDashboard({ categories }: AdminDashboardProps) {
         setOptions([...q.options]);
         setCorrectIndex(q.correctIndex);
         setExplanation(q.explanation);
+        setIsExam(q.isExam || false);
         setEditingId(q.id);
         setIsAdding(true);
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -91,7 +94,8 @@ export default function AdminDashboard({ categories }: AdminDashboardProps) {
                     options,
                     correctIndex,
                     explanation,
-                    categoryId: currentCategory.id
+                    categoryId: currentCategory.id,
+                    isExam
                 });
                 alert('Question updated!');
             } else {
@@ -99,7 +103,8 @@ export default function AdminDashboard({ categories }: AdminDashboardProps) {
                     text,
                     options,
                     correctIndex,
-                    explanation
+                    explanation,
+                    isExam
                 });
                 alert('Question added!');
             }
@@ -108,6 +113,8 @@ export default function AdminDashboard({ categories }: AdminDashboardProps) {
             alert('Failed to save question');
         }
     };
+
+    // ... unchanged handleDelete ...
 
     const handleDelete = async (qId: number) => {
         if (!confirm('Are you sure you want to delete this question?')) return;
@@ -175,6 +182,17 @@ export default function AdminDashboard({ categories }: AdminDashboardProps) {
                     {isAdding && (
                         <form className={styles.form} onSubmit={handleAddSubmit}>
                             <h3>{editingId ? 'Edit Question' : `Add New Question to ${currentCategory?.name}`}</h3>
+                            <div className={styles.formGroup}>
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        checked={isExam}
+                                        onChange={(e) => setIsExam(e.target.checked)}
+                                        style={{ marginRight: '0.5rem' }}
+                                    />
+                                    기출문제 (Past Exam Question)
+                                </label>
+                            </div>
                             <div className={styles.formGroup}>
                                 <label>Question Text</label>
                                 <input required value={text} onChange={e => setText(e.target.value)} className={styles.input} />

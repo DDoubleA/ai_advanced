@@ -83,3 +83,13 @@
     /* Lighter green for revealed */
     border-color: #86efac !important;
 }
+.examBadge {
+    background-color: #ef4444;
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+    font-weight: 700;
+}
