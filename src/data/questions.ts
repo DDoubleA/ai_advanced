@@ -39,7 +39,8 @@ export const formatCategories = async (): Promise<Category[]> => {
                 text: q.text,
                 options: q.options,
                 correctIndex: q.correctIndex,
-                explanation: q.explanation
+                explanation: q.explanation,
+                categoryId: c.id
             }))
         }));
     } catch (error) {
@@ -66,7 +67,8 @@ export const getCategory = async (id: string): Promise<Category | undefined> => 
             text: q.text,
             options: q.options,
             correctIndex: q.correctIndex,
-            explanation: q.explanation
+            explanation: q.explanation,
+            categoryId: category.id
         }))
     };
 };
