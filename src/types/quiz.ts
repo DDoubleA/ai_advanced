@@ -4,6 +4,7 @@ export interface Question {
   options: string[]; // Array of 5 strings
   correctIndex: number; // 0-4
   explanation: string;
+  categoryId: string;
 }
 
 export interface Category {

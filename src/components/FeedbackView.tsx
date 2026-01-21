@@ -34,9 +34,21 @@ export default function FeedbackView({ isCorrect, explanation, onNext, isLastQue
     return (
         <div className={`${styles.container} ${isCorrect ? styles.containerCorrect : styles.containerWrong}`}>
             <div className={styles.content}>
-                <h3 className={styles.title}>
-                    {isCorrect ? 'Correct! 🎉' : 'Incorrect 😞'}
-                </h3>
+                <div className={styles.headerRow}>
+                    <h3 className={styles.title}>
+                        {isCorrect ? 'Correct! 🎉' : 'Incorrect 😞'}
+                    </h3>
+                    {!showInquiry && (
+                        <button
+                            className={styles.topReportButton}
+                            onClick={() => setShowInquiry(true)}
+                            title="Report an issue with this question"
+                        >
+                            Report 🚨
+                        </button>
+                    )}
+                </div>
+
                 <p className={styles.explanation}>
                     <strong>Explanation:</strong> {explanation}
                 </p>
@@ -70,14 +82,9 @@ export default function FeedbackView({ isCorrect, explanation, onNext, isLastQue
                         </div>
                     </div>
                 ) : (
-                    <div className={styles.footer}>
-                        <button className={styles.inquiryButton} onClick={() => setShowInquiry(true)}>
-                            Report Issue 🚨
-                        </button>
-                        <button className={styles.nextButton} onClick={onNext}>
-                            {isLastQuestion ? 'See Results' : 'Next Question'}
-                        </button>
-                    </div>
+                    <button className={styles.nextButton} onClick={onNext}>
+                        {isLastQuestion ? 'See Results' : 'Next Question'}
+                    </button>
                 )}
             </div>
         </div>

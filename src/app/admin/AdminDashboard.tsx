@@ -15,7 +15,7 @@ interface Inquiry {
     content: string;
     status: string;
     createdAt: Date;
-    question: { text: string };
+    question: Question;
 }
 
 export default function AdminDashboard({ categories }: AdminDashboardProps) {
@@ -90,7 +90,8 @@ export default function AdminDashboard({ categories }: AdminDashboardProps) {
                     text,
                     options,
                     correctIndex,
-                    explanation
+                    explanation,
+                    categoryId: currentCategory.id
                 });
                 alert('Question updated!');
             } else {
@@ -266,13 +267,25 @@ export default function AdminDashboard({ categories }: AdminDashboardProps) {
                                 <p>{inquiry.content}</p>
                             </div>
                             <div className={styles.relatedQuestion}>
-                                <strong>Related Question:</strong> {inquiry.question.text}
+                                <strong>Related Question:</strong> {inquiry.question.text} (Q#{inquiry.question.id})
                             </div>
-                            {inquiry.status === 'OPEN' && (
-                                <button className={styles.resolveButton} onClick={() => handleResolve(inquiry.id)}>
-                                    Mark as Resolved
+                            <div className={styles.inquiryActions}>
+                                <button
+                                    className={`${styles.resolveButton} ${styles.actionBtn}`}
+                                    onClick={() => {
+                                        startEditing(inquiry.question as Question);
+                                        setActiveTab('questions');
+                                        setSelectedCategory(inquiry.question.categoryId); // Ensure category is selected
+                                    }}
+                                >
+                                    Edit Question ✏️
                                 </button>
-                            )}
+                                {inquiry.status === 'OPEN' && (
+                                    <button className={`${styles.resolveButton} ${styles.actionBtn}`} onClick={() => handleResolve(inquiry.id)}>
+                                        Mark as Resolved ✅
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     ))}
                 </div>

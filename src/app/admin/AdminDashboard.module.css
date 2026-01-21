@@ -176,6 +176,7 @@
     color: #334155;
     border-color: #94a3b8;
 }
+
 .tabs {
     display: flex;
     gap: 1rem;
@@ -245,7 +246,6 @@
 }
 
 .resolveButton {
-    margin-top: 1rem;
     background: #dcfce7;
     color: #15803d;
     border: 1px solid #bbf7d0;
@@ -257,4 +257,10 @@
 
 .resolveButton:hover {
     background: #bbf7d0;
+}
+
+.inquiryActions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
 }

@@ -7,7 +7,7 @@ import { cookies } from 'next/headers';
 
 // getCategories removed as we use Prisma directly
 
-export async function addQuestion(categoryId: string, question: Omit<Question, 'id'>) {
+export async function addQuestion(categoryId: string, question: Omit<Question, 'id' | 'categoryId'>) {
     const category = await prisma.category.findUnique({
         where: { id: categoryId }
     });
@@ -30,6 +30,8 @@ export async function addQuestion(categoryId: string, question: Omit<Question, '
     revalidatePath(`/quiz/${categoryId}`);
     return { success: true, message: 'Question added successfully!' };
 }
+
+// ... unchanged deleteQuestion ...
 
 export async function deleteQuestion(categoryId: string, questionId: number) {
     try {
@@ -54,7 +56,8 @@ export async function updateQuestion(categoryId: string, updatedQuestion: Questi
                 text: updatedQuestion.text,
                 options: updatedQuestion.options,
                 correctIndex: updatedQuestion.correctIndex,
-                explanation: updatedQuestion.explanation
+                explanation: updatedQuestion.explanation,
+                categoryId: categoryId // Ensure category integrity
             }
         });
     } catch (e) {
@@ -66,6 +69,8 @@ export async function updateQuestion(categoryId: string, updatedQuestion: Questi
     revalidatePath(`/quiz/${categoryId}`);
     return { success: true, message: 'Question updated successfully!' };
 }
+
+// ... unchanged login/logout ...
 
 export async function login(password: string) {
     if (password === 'admin123') {
@@ -100,7 +105,8 @@ export async function getQuestionsByIds(ids: number[]): Promise<Question[]> {
             text: q.text,
             options: q.options,
             correctIndex: q.correctIndex,
-            explanation: q.explanation
+            explanation: q.explanation,
+            categoryId: q.categoryId
         }));
     } catch (e) {
         console.error("Failed to fetch questions by IDs", e);
@@ -129,11 +135,7 @@ export async function getInquiries() {
         const inquiries = await prisma.inquiry.findMany({
             orderBy: { createdAt: 'desc' },
             include: {
-                question: {
-                    select: {
-                        text: true
-                    }
-                }
+                question: true // Fetch all question fields to allow editing
             }
         });
         return inquiries;
