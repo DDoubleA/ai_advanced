@@ -83,6 +83,7 @@ export default function QuizGame({ questions, categoryName }: QuizGameProps) {
         setSelectedOption(null);
         setShowFeedback(false);
         setIsFinished(false);
+        setIsConfirmingFinish(false); // Reset confirmation state
         setShuffledState(null);
     };
 
@@ -143,7 +144,7 @@ export default function QuizGame({ questions, categoryName }: QuizGameProps) {
             <main className={styles.main}>
                 {isPreviouslyIncorrect && (
                     <div className={styles.incorrectBadge}>
-                        ⚠️ You missed this question previously!
+                        ⚠️ 이전에 틀렸던 문제입니다!
                     </div>
                 )}
 
@@ -153,6 +154,7 @@ export default function QuizGame({ questions, categoryName }: QuizGameProps) {
                     disabled={selectedOption !== null}
                     selectedOption={selectedOption}
                     correctOption={selectedOption !== null ? correctDisplayIndex : null}
+                    currentNumber={currentIndex + 1}
                 />
 
                 {showFeedback && (
@@ -161,6 +163,7 @@ export default function QuizGame({ questions, categoryName }: QuizGameProps) {
                         explanation={currentQuestion.explanation}
                         onNext={handleNext}
                         isLastQuestion={currentIndex === questions.length - 1}
+                        questionId={currentQuestion.id}
                     />
                 )}
             </main>

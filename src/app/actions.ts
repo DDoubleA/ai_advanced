@@ -107,3 +107,52 @@ export async function getQuestionsByIds(ids: number[]): Promise<Question[]> {
         return [];
     }
 }
+
+export async function createInquiry(questionId: number, content: string) {
+    try {
+        await prisma.inquiry.create({
+            data: {
+                questionId,
+                content,
+                status: 'OPEN'
+            }
+        });
+        return { success: true, message: 'Inquiry submitted successfully!' };
+    } catch (e) {
+        console.error("Failed to create inquiry", e);
+        return { success: false, message: 'Failed to submit inquiry.' };
+    }
+}
+
+export async function getInquiries() {
+    try {
+        const inquiries = await prisma.inquiry.findMany({
+            orderBy: { createdAt: 'desc' },
+            include: {
+                question: {
+                    select: {
+                        text: true
+                    }
+                }
+            }
+        });
+        return inquiries;
+    } catch (e) {
+        console.error("Failed to fetch inquiries", e);
+        return [];
+    }
+}
+
+export async function resolveInquiry(id: number) {
+    try {
+        await prisma.inquiry.update({
+            where: { id },
+            data: { status: 'RESOLVED' }
+        });
+        revalidatePath('/admin');
+        return { success: true };
+    } catch (e) {
+        console.error("Failed to resolve inquiry", e);
+        return { success: false };
+    }
+}

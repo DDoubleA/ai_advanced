@@ -13,6 +13,7 @@ model Category {
   questions Question[]
 }
 
+
 model Question {
   id           Int      @id @default(autoincrement())
   text         String
@@ -21,4 +22,14 @@ model Question {
   explanation  String
   categoryId   String
   category     Category @relation(fields: [categoryId], references: [id])
+  inquiries    Inquiry[] // Relation to inquiries
+}
+
+model Inquiry {
+  id        Int      @id @default(autoincrement())
+  questionId Int
+  content   String
+  status    String   @default("OPEN") // OPEN, RESOLVED
+  createdAt DateTime @default(now())
+  question  Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 }

@@ -7,13 +7,14 @@ interface QuestionViewProps {
     disabled: boolean;
     selectedOption: number | null;
     correctOption: number | null; // Pass this ONLY if we want to reveal it immediately styling-wise, though FeedbackView might handle it.
+    currentNumber: number;
 }
 
-export default function QuestionView({ question, onAnswer, disabled, selectedOption, correctOption }: QuestionViewProps) {
+export default function QuestionView({ question, onAnswer, disabled, selectedOption, correctOption, currentNumber }: QuestionViewProps) {
     return (
         <div className={styles.container}>
             <h2 className={styles.questionText}>
-                <span className={styles.questionNumber}>Q{question.id % 20 === 0 ? 20 : question.id % 20}. </span>
+                <span className={styles.questionNumber}>Q{currentNumber}. </span>
                 {question.text}
             </h2>
 

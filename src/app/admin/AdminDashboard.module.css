@@ -176,3 +176,85 @@
     color: #334155;
     border-color: #94a3b8;
 }
+.tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.tabButton {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-weight: 600;
+    color: #64748b;
+    border-bottom: 2px solid transparent;
+}
+
+.activeTab {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+.inquiryItem {
+    padding: 1.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    background: white;
+}
+
+.inquiryHeader {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    align-items: center;
+}
+
+.inquiryStatus {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.statusOPEN {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.statusRESOLVED {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.inquiryContent {
+    margin-bottom: 1rem;
+    color: #334155;
+    line-height: 1.5;
+}
+
+.relatedQuestion {
+    font-size: 0.9rem;
+    color: #64748b;
+    background: #f8fafc;
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+
+.resolveButton {
+    margin-top: 1rem;
+    background: #dcfce7;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.resolveButton:hover {
+    background: #bbf7d0;
+}
