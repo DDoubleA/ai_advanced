@@ -78,13 +78,7 @@ export default function QuizGame({ questions, categoryName }: QuizGameProps) {
     };
 
     const handleRestart = () => {
-        setCurrentIndex(0);
-        setScore(0);
-        setSelectedOption(null);
-        setShowFeedback(false);
-        setIsFinished(false);
-        setIsConfirmingFinish(false); // Reset confirmation state
-        setShuffledState(null);
+        window.location.reload();
     };
 
     const handleEarlyFinish = () => {

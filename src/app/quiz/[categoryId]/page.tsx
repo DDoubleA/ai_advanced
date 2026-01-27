@@ -20,14 +20,6 @@ export default async function QuizPage({ params }: PageProps) {
     const { categoryId } = await params;
     const category = await getCategory(categoryId);
 
-    if (category) {
-        // Randomize questions: Shuffle and take 20
-        const shuffledQuestions = [...category.questions]
-            .sort(() => 0.5 - Math.random())
-            .slice(0, 20);
-        category.questions = shuffledQuestions;
-    }
-
     if (!category) {
         return (
             <div className={styles.errorContainer}>

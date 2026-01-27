@@ -24,6 +24,8 @@ model Question {
   isExam       Boolean   @default(false)
   category     Category  @relation(fields: [categoryId], references: [id])
   inquiries    Inquiry[] // Relation to inquiries
+
+  @@index([categoryId])
 }
 
 model Inquiry {

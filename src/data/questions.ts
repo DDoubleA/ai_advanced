@@ -51,25 +51,49 @@ export const formatCategories = async (): Promise<Category[]> => {
 };
 
 export const getCategory = async (id: string): Promise<Category | undefined> => {
-    const category = await prisma.category.findUnique({
+    // 1. Fetch category info
+    const categoryInfo = await prisma.category.findUnique({
         where: { id },
-        include: {
-            questions: true
+        select: { id: true, name: true }
+    });
+
+    if (!categoryInfo) return undefined;
+
+    // 2. Fetch all question IDs for this category (Lightweight)
+    const allQuestionIds = await prisma.question.findMany({
+        where: { categoryId: id },
+        select: { id: true }
+    });
+
+    // 3. Shuffle IDs and pick 20
+    const shuffledIds = allQuestionIds
+        .map(q => q.id)
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 20);
+
+    // 4. Fetch details for the selected questions
+    const selectedQuestions = await prisma.question.findMany({
+        where: {
+            id: { in: shuffledIds }
         }
     });
 
-    if (!category) return undefined;
+    // 5. Restore random order (since findMany might return sorted by ID)
+    const questionMap = new Map(selectedQuestions.map(q => [q.id, q]));
+    const orderedQuestions = shuffledIds
+        .map(id => questionMap.get(id))
+        .filter((q): q is typeof selectedQuestions[0] => q !== undefined);
 
     return {
-        id: category.id,
-        name: category.name,
-        questions: category.questions.map(q => ({
+        id: categoryInfo.id,
+        name: categoryInfo.name,
+        questions: orderedQuestions.map(q => ({
             id: q.id,
             text: q.text,
             options: q.options,
             correctIndex: q.correctIndex,
             explanation: q.explanation,
-            categoryId: category.id,
+            categoryId: categoryInfo.id,
             isExam: q.isExam
         }))
     };
