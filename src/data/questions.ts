@@ -101,34 +101,16 @@ export const getCategory = async (id: string): Promise<Category | undefined> => 
 };
 
 export const getCategoriesSummary = async () => {
-    try {
-        const categories = await prisma.category.findMany({
-            select: {
-                id: true,
-                name: true
-            },
-            orderBy: {
-                id: 'asc'
-            }
-        });
+    // Static data to eliminate DB query latency for the Home Page
+    // Tuned for maximum speed as requested by user
+    const STATIC_CATEGORIES = [
+        { id: 'python-basics', name: 'Python 기초' },
+        { id: 'data-analysis', name: '데이터 분석' },
+        { id: 'llm-basics', name: 'LLM 기본' },
+        { id: 'prompt-engineering', name: '프롬프트 엔지니어링' },
+        { id: 'rag-agent', name: 'RAG Agent' },
+        { id: 'fine-tuning', name: 'Fine Tuning' }
+    ];
 
-        const ORDER = [
-            'python-basics',
-            'data-analysis',
-            'llm-basics',
-            'prompt-engineering',
-            'rag-agent',
-            'fine-tuning'
-        ];
-
-        return categories.sort((a, b) => {
-            return ORDER.indexOf(a.id) - ORDER.indexOf(b.id);
-        }).map(c => ({
-            id: c.id,
-            name: c.name
-        }));
-    } catch (error) {
-        console.error('Error fetching categories summary:', error);
-        return [];
-    }
+    return STATIC_CATEGORIES;
 };
