@@ -1,4 +1,4 @@
-import { Category } from '@/types/quiz';
+import { Category, Question } from '@/types/quiz';
 import { prisma } from '@/lib/prisma';
 
 // Fetch all categories with their questions
@@ -59,44 +59,34 @@ export const getCategory = async (id: string): Promise<Category | undefined> => 
 
     if (!categoryInfo) return undefined;
 
-    // 2. Fetch all question IDs for this category (Lightweight)
-    const allQuestionIds = await prisma.question.findMany({
-        where: { categoryId: id },
-        select: { id: true }
-    });
+    // 2. Fetch 20 random questions directly using Raw SQL (PostgreSQL specific)
+    // This is faster than application-side shuffling for small/medium datasets
+    try {
+        const questions = await prisma.$queryRaw<Question[]>`
+            SELECT id, text, options, "correctIndex", explanation, "categoryId", "isExam"
+            FROM "Question"
+            WHERE "categoryId" = ${id}
+            ORDER BY RANDOM()
+            LIMIT 20;
+        `;
 
-    // 3. Shuffle IDs and pick 20
-    const shuffledIds = allQuestionIds
-        .map(q => q.id)
-        .sort(() => 0.5 - Math.random())
-        .slice(0, 20);
-
-    // 4. Fetch details for the selected questions
-    const selectedQuestions = await prisma.question.findMany({
-        where: {
-            id: { in: shuffledIds }
-        }
-    });
-
-    // 5. Restore random order (since findMany might return sorted by ID)
-    const questionMap = new Map(selectedQuestions.map(q => [q.id, q]));
-    const orderedQuestions = shuffledIds
-        .map(id => questionMap.get(id))
-        .filter((q): q is typeof selectedQuestions[0] => q !== undefined);
-
-    return {
-        id: categoryInfo.id,
-        name: categoryInfo.name,
-        questions: orderedQuestions.map(q => ({
-            id: q.id,
-            text: q.text,
-            options: q.options,
-            correctIndex: q.correctIndex,
-            explanation: q.explanation,
-            categoryId: categoryInfo.id,
-            isExam: q.isExam
-        }))
-    };
+        return {
+            id: categoryInfo.id,
+            name: categoryInfo.name,
+            questions: questions.map(q => ({
+                id: q.id,
+                text: q.text,
+                options: q.options,
+                correctIndex: q.correctIndex,
+                explanation: q.explanation,
+                categoryId: categoryInfo.id,
+                isExam: q.isExam
+            }))
+        };
+    } catch (e) {
+        console.error("Failed to fetch random questions", e);
+        return undefined;
+    }
 };
 
 export const getCategoriesSummary = async () => {
