@@ -51,40 +51,51 @@ export const formatCategories = async (): Promise<Category[]> => {
 };
 
 export const getCategory = async (id: string): Promise<Category | undefined> => {
-    // 1. Fetch category info
-    const categoryInfo = await prisma.category.findUnique({
-        where: { id },
-        select: { id: true, name: true }
-    });
-
-    if (!categoryInfo) return undefined;
-
-    // 2. Fetch 20 random questions directly using Raw SQL (PostgreSQL specific)
-    // This is faster than application-side shuffling for small/medium datasets
     try {
-        const questions = await prisma.$queryRaw<Question[]>`
-            SELECT id, text, options, "correctIndex", explanation, "categoryId", "isExam"
-            FROM "Question"
-            WHERE "categoryId" = ${id}
+        // Merge into a single query using LEFT JOIN to handle empty categories
+        // and fetch category details + random questions in one go.
+        const results = await prisma.$queryRaw<any[]>`
+            SELECT
+                c.id as "catId",
+                c.name as "catName",
+                q.id,
+                q.text,
+                q.options,
+                q."correctIndex",
+                q.explanation,
+                q."categoryId",
+                q."isExam"
+            FROM "Category" c
+            LEFT JOIN "Question" q ON c.id = q."categoryId"
+            WHERE c.id = ${id}
             ORDER BY RANDOM()
             LIMIT 20;
         `;
 
+        if (results.length === 0) return undefined;
+
+        const first = results[0];
+
+        // Check if there are valid questions (id is not null)
+        // If LEFT JOIN returns nulls for question fields, it means no questions exist.
+        const questions = first.id ? results.map(row => ({
+            id: row.id,
+            text: row.text,
+            options: row.options,
+            correctIndex: row.correctIndex,
+            explanation: row.explanation,
+            categoryId: row.categoryId,
+            isExam: row.isExam
+        })) : [];
+
         return {
-            id: categoryInfo.id,
-            name: categoryInfo.name,
-            questions: questions.map(q => ({
-                id: q.id,
-                text: q.text,
-                options: q.options,
-                correctIndex: q.correctIndex,
-                explanation: q.explanation,
-                categoryId: categoryInfo.id,
-                isExam: q.isExam
-            }))
+            id: first.catId,
+            name: first.catName,
+            questions: questions as Question[]
         };
+
     } catch (e) {
-        console.error("Failed to fetch random questions", e);
+        console.error("Failed to fetch custom joined data", e);
         return undefined;
     }
 };
