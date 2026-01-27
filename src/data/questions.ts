@@ -105,10 +105,7 @@ export const getCategoriesSummary = async () => {
         const categories = await prisma.category.findMany({
             select: {
                 id: true,
-                name: true,
-                _count: {
-                    select: { questions: true }
-                }
+                name: true
             },
             orderBy: {
                 id: 'asc'
@@ -128,8 +125,7 @@ export const getCategoriesSummary = async () => {
             return ORDER.indexOf(a.id) - ORDER.indexOf(b.id);
         }).map(c => ({
             id: c.id,
-            name: c.name,
-            questionCount: c._count.questions
+            name: c.name
         }));
     } catch (error) {
         console.error('Error fetching categories summary:', error);

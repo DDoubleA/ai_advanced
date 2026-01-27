@@ -22,7 +22,6 @@ export default async function Home() {
             key={category.id}
             id={category.id}
             name={category.name}
-            questionCount={category.questionCount}
           />
         ))}
       </div>
