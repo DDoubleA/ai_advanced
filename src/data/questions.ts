@@ -98,3 +98,40 @@ export const getCategory = async (id: string): Promise<Category | undefined> => 
         }))
     };
 };
+
+export const getCategoriesSummary = async () => {
+    try {
+        const categories = await prisma.category.findMany({
+            select: {
+                id: true,
+                name: true,
+                _count: {
+                    select: { questions: true }
+                }
+            },
+            orderBy: {
+                id: 'asc'
+            }
+        });
+
+        const ORDER = [
+            'python-basics',
+            'data-analysis',
+            'llm-basics',
+            'prompt-engineering',
+            'rag-agent',
+            'fine-tuning'
+        ];
+
+        return categories.sort((a, b) => {
+            return ORDER.indexOf(a.id) - ORDER.indexOf(b.id);
+        }).map(c => ({
+            id: c.id,
+            name: c.name,
+            questionCount: c._count.questions
+        }));
+    } catch (error) {
+        console.error('Error fetching categories summary:', error);
+        return [];
+    }
+};

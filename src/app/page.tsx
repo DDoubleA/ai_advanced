@@ -1,4 +1,4 @@
-import { formatCategories } from '@/data/questions';
+import { getCategoriesSummary } from '@/data/questions';
 import CategoryCard from '@/components/CategoryCard';
 import ReviewLink from '@/components/ReviewLink';
 import styles from './page.module.css';
@@ -6,7 +6,7 @@ import styles from './page.module.css';
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  const categories = await formatCategories();
+  const categories = await getCategoriesSummary();
 
   return (
     <main className={styles.main}>
@@ -22,7 +22,7 @@ export default async function Home() {
             key={category.id}
             id={category.id}
             name={category.name}
-            questionCount={category.questions.length}
+            questionCount={category.questionCount}
           />
         ))}
       </div>
