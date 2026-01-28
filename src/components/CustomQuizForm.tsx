@@ -71,7 +71,7 @@ export default function CustomQuizForm({ categories }: Props) {
                         className={styles.startButton}
                         disabled={selectedCats.size === 0}
                     >
-                        Start Custom Quiz ➔
+                        Start ➔
                     </button>
                 </div>
             </div>
