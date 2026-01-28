@@ -1,0 +1,35 @@
+.pageContainer {
+    min-height: 100vh;
+    padding: 1rem;
+    background-color: var(--background-color);
+}
+
+.backButton {
+    display: inline-block;
+    margin-bottom: 2rem;
+    color: #64748b;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.backButton:hover {
+    background: #e2e8f0;
+    color: var(--text-color);
+}
+
+.errorContainer {
+    display: flex;
+    flex-direction: column;
+    items-align: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+}
+
+.backLink {
+    color: var(--primary-color);
+    font-weight: 700;
+    margin-top: 1rem;
+}

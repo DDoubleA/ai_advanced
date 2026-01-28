@@ -24,6 +24,7 @@ async function main() {
                         options: q.options,
                         correctIndex: q.correctIndex,
                         explanation: q.explanation,
+                        isExam: q.isExam || false
                     }))
                 }
             }

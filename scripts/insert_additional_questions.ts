@@ -128,7 +128,8 @@ async function main() {
                 options: q.options,
                 correctIndex: q.correctIndex,
                 explanation: q.explanation,
-                categoryId: q.categoryId
+                categoryId: q.categoryId,
+                isExam: Math.random() < 0.3 // Randomly assign 30% as exam questions
             }
         });
         console.log(`Added: ${q.text.substring(0, 30)}...`);

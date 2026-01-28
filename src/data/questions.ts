@@ -1,5 +1,6 @@
 import { Category, Question } from '@/types/quiz';
 import { prisma } from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 
 // Fetch all categories with their questions
 export const formatCategories = async (): Promise<Category[]> => {
@@ -113,4 +114,32 @@ export const getCategoriesSummary = async () => {
     ];
 
     return STATIC_CATEGORIES;
+};
+
+export const getCustomQuiz = async (categoryIds: string[], isExamOnly: boolean): Promise<Question[]> => {
+    if (categoryIds.length === 0) return [];
+
+    try {
+        // Use findMany for reliability with array filters
+        const whereClause: any = {
+            categoryId: { in: categoryIds }
+        };
+
+        if (isExamOnly) {
+            whereClause.isExam = true;
+        }
+
+        const questions = await prisma.question.findMany({
+            where: whereClause
+        });
+
+        // Shuffle and take 20
+        return questions
+            .sort(() => 0.5 - Math.random())
+            .slice(0, 20);
+
+    } catch (e) {
+        console.error("Failed to fetch custom quiz", e);
+        return [];
+    }
 };
